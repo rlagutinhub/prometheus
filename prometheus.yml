@@ -1,3 +1,8 @@
+global:
+  scrape_interval: 1m
+  evaluation_interval: 1m
+  scrape_timeout: 10s 
+
 alerting:
   alertmanagers:
   - scheme: http
@@ -6,7 +11,7 @@ alerting:
       - "alertmanager:9093"
 
 rule_files:
-  - "alert.rules"
+  - "alert_rules.yml"
 
 scrape_configs:
 
@@ -21,10 +26,10 @@ scrape_configs:
     static_configs:
     - targets: ['node-exporter:9100']
 
-  - job_name: 'node-remote'
-    scrape_interval: 5s
-    static_configs:
-    - targets: ['10.20.1.56:9100']
+  # - job_name: 'node-remote'
+  #   scrape_interval: 5s
+  #   static_configs:
+  #   - targets: ['192.168.1.1:9100']
 
   - job_name: 'blackbox-http_2xx'
     scrape_interval: 30s
