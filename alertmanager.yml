@@ -7,44 +7,25 @@ route:
   receiver: default
 
   routes:
-
     - receiver: 'telegram'
       group_wait: 10s
       match_re:
         severity: 'critical|warning'
       continue: true
 
-    #  - receiver: 'smtp'
-    #    group_wait: 10s
-    #    match_re:
-    #      severity: critical
-    #    continue: true
-
 receivers:
-
   - name: 'default'
 
   - name: 'telegram'
     telegram_configs:
-    - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
-      api_url: 'https://api.telegram.org'
-      chat_id: 471106208
-      # parse_mode: 'HTML'
-      text: |
-        *Alert:* {{ .CommonAnnotations.summary }}
-        *Description:* {{ .CommonAnnotations.description }}
-        *Severity:* {{ .CommonLabels.severity }}
-        *Time:* {{ .StartsAt }}
-        *Labels:*
-        {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
-        {{ end }}
-
-# - name: 'smtp'
-#   email_configs:
-#   - smarthost: mail.example.ru:25
-#     hello: mail.example.ru
-#     to: 'root@servers.ru'
-#     from: 'admin@example.ru'
-#     auth_username: 'admin@example.ru'
-#     auth_password: '123456'
-#     require_tls: true
+      - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
+        api_url: 'https://api.telegram.org'
+        chat_id: 471106208
+        text: |
+          *Alert:* {{ .CommonAnnotations.summary }}
+          *Description:* {{ .CommonAnnotations.description }}
+          *Severity:* {{ .CommonLabels.severity }}
+          *Time:* {{ .StartsAt }}
+          *Labels:*
+          {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
+          {{ end }}
