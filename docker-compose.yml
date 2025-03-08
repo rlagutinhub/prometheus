@@ -1,10 +1,3 @@
-networks:
-  monitoring:
-    driver: bridge
-
-volumes:
-  prometheus_data: {}
-
 services:
 
   prometheus:
@@ -23,27 +16,6 @@ services:
       - '--web.enable-lifecycle'
     ports:
       - 9090:9090
-    restart: unless-stopped
-    environment:
-      TZ: "Europe/Moscow"
-    networks:
-      - monitoring
-
-  node-exporter:
-    image: prom/node-exporter
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    container_name: exporter
-    hostname: exporter
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    expose:
-      - 9100
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
@@ -86,6 +58,27 @@ services:
     networks:
       - monitoring
 
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    container_name: node-exporter
+    hostname: node-exporter
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - monitoring
+
   blackbox-exporter:
     image: prom/blackbox-exporter
     volumes:
@@ -99,3 +92,11 @@ services:
       - "9115:9115"
     networks:
       - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+# volumes:
+#   prometheus_data:
+#     driver: local
