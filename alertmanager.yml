@@ -1,0 +1,38 @@
+global:
+  resolve_timeout: 10s
+
+route:
+  group_by: ['alertname']
+  group_wait: 3s
+  receiver: smtp
+
+  routes:
+   - receiver: 'telegram_bot'
+     group_wait: 3s
+     match_re:
+       severity: critical|warning
+     continue: true
+
+   - receiver: 'smtp'
+     group_wait: 3s
+     match_re:
+       severity: critical
+     continue: true
+
+receivers:
+- name: 'telegram_bot'
+  telegram_configs:
+  - bot_token: '1313667911:AAHtEYAKqxUH8ZpyC28R-wxKfvH8WR6-vdNw'
+    api_url: 'https://api.telegram.org'
+    chat_id: 220816261
+    parse_mode: 'HTML'
+
+- name: 'smtp'
+  email_configs:
+  - smarthost: mail.example.ru:25
+    hello: mail.example.ru
+    to: 'root@servers.ru'
+    from: 'vladimir@example.ru'
+    auth_username: 'vladimir@example.ru'
+    auth_password: 'password123'
+    require_tls: true
