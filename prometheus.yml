@@ -33,7 +33,7 @@ scrape_configs:
 
   - job_name: 'smartctl-local'
     scrape_interval: 1m
-    evaluation_interval: 1m
+    # evaluation_interval: 1m
     scrape_timeout: 30s 
     static_configs:
     - targets: ['smartctl-exporter:9633']
