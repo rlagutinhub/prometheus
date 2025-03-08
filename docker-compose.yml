@@ -1,11 +1,11 @@
 services:
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./alert.rules:/etc/prometheus/alert.rules
-      - ./prometheus:/prometheus
+      - ./prometheus:/prometheus # - prometheus_data:/prometheus
     container_name: prometheus
     hostname: prometheus
     command:
@@ -23,25 +23,27 @@ services:
       - monitoring
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:latest
     user: root
     depends_on:
       - prometheus
     ports:
       - 3000:3000
     volumes:
-      - ./grafana:/var/lib/grafana
+      - ./grafana:/var/lib/grafana # - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     container_name: grafana
     hostname: grafana
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
+      # GF_SECURITY_ADMIN_USER: "admin"
+      # GF_SECURITY_ADMIN_PASSWORD: "grafana"
     networks:
       - monitoring
 
   alertmanager:
-    image: prom/alertmanager
+    image: prom/alertmanager:latest
     user: root
     ports:
       - 127.0.0.1:9093:9093
@@ -59,7 +61,7 @@ services:
       - monitoring
 
   node-exporter:
-    image: prom/node-exporter
+    image: prom/node-exporter:latest
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -80,7 +82,7 @@ services:
       - monitoring
 
   blackbox-exporter:
-    image: prom/blackbox-exporter
+    image: prom/blackbox-exporter:latest
     volumes:
       - ./blackbox.yml:/config/blackbox.yml
     container_name: blackbox-exporter
