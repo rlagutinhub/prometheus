@@ -33,8 +33,8 @@ scrape_configs:
   #   - targets: ['192.168.1.1:9100']
 
   - job_name: 'smartctl-local'
-    scrape_interval: 15s
-    scrape_timeout: 10s
+    scrape_interval: 5m
+    scrape_timeout: 30s
     static_configs:
     - targets: ['smartctl-exporter:9633']
 
@@ -46,8 +46,8 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://example.com
         - https://ya.ru
+        - https://mail.ru
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
