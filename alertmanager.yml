@@ -4,7 +4,7 @@ global:
 route:
   group_by: ['alertname']
   group_wait: 3s
-  receiver: smtp
+  receiver: default
 
   routes:
    - receiver: 'telegram'
@@ -20,6 +20,8 @@ route:
   #    continue: true
 
 receivers:
+- name: 'default'
+
 - name: 'telegram'
   telegram_configs:
   - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
