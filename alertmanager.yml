@@ -1,33 +1,43 @@
 global:
-  resolve_timeout: 10s
+  resolve_timeout: 5m
 
 route:
   group_by: ['alertname']
-  group_wait: 3s
+  group_wait: 10s
   receiver: default
 
   routes:
-   - receiver: 'telegram'
-     group_wait: 3s
-     match_re:
-       severity: critical|warning
-     continue: true
 
-  #  - receiver: 'smtp'
-  #    group_wait: 3s
-  #    match_re:
-  #      severity: critical
-  #    continue: true
+    - receiver: 'telegram'
+      group_wait: 10s
+      match_re:
+        severity: 'critical|warning'
+      continue: true
+
+    #  - receiver: 'smtp'
+    #    group_wait: 10s
+    #    match_re:
+    #      severity: critical
+    #    continue: true
 
 receivers:
-- name: 'default'
 
-- name: 'telegram'
-  telegram_configs:
-  - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
-    api_url: 'https://api.telegram.org'
-    chat_id: 471106208
-    parse_mode: 'HTML'
+  - name: 'default'
+
+  - name: 'telegram'
+    telegram_configs:
+    - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
+      api_url: 'https://api.telegram.org'
+      chat_id: 471106208
+      # parse_mode: 'HTML'
+      text: |
+        *Alert:* {{ .CommonAnnotations.summary }}
+        *Description:* {{ .CommonAnnotations.description }}
+        *Severity:* {{ .CommonLabels.severity }}
+        *Time:* {{ .StartsAt }}
+        *Labels:*
+        {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
+        {{ end }}
 
 # - name: 'smtp'
 #   email_configs:
