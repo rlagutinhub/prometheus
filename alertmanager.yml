@@ -21,7 +21,7 @@ receivers:
       - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
         api_url: 'https://api.telegram.org'
         chat_id: 471106208
-        text: |
+        message: |
           *Alert:* {{ .CommonAnnotations.summary }}
           *Description:* {{ .CommonAnnotations.description }}
           *Severity:* {{ .CommonLabels.severity }}
