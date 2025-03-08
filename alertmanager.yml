@@ -20,7 +20,7 @@ route:
   #    continue: true
 
 receivers:
-- name: 'telegram_bot'
+- name: 'telegram'
   telegram_configs:
   - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
     api_url: 'https://api.telegram.org'
