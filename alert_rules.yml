@@ -1,0 +1,84 @@
+groups:
+
+  - name: node_alerts
+    rules:
+      # Алерт на высокую загрузку CPU
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% on {{ $labels.instance }} for more than 5 minutes."
+
+      # Алерт на высокую загрузку памяти
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 80% on {{ $labels.instance }} for more than 5 minutes."
+
+      # Алерт на нехватку свободного места на диске
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"} < 20
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is below 20% on {{ $labels.instance }} for more than 10 minutes."
+
+      # Алерт на высокую загрузку сети
+      - alert: HighNetworkTraffic
+        expr: rate(node_network_receive_bytes_total[5m]) > 100000000 # 100 MB/s
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network traffic on {{ $labels.instance }}"
+          description: "Network traffic is above 100 MB/s on {{ $labels.instance }} for more than 5 minutes."
+
+      # Алерт на недоступность узла (Node Exporter не отвечает)
+      - alert: NodeDown
+        expr: up{job="node"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node {{ $labels.instance }} is down"
+          description: "Node {{ $labels.instance }} has been down for more than 1 minute."
+
+      # Алерт на высокую загрузку диска (IO)
+      - alert: HighDiskIO
+        expr: rate(node_disk_io_time_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Disk I/O on {{ $labels.instance }}"
+          description: "Disk I/O is above 80% on {{ $labels.instance }} for more than 5 minutes."
+
+      # Алерт на высокую загрузку inodes (если файловая система почти заполнена inodes)
+      - alert: LowInodes
+        expr: (node_filesystem_files_free{mountpoint="/"} * 100) / node_filesystem_files{mountpoint="/"} < 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low inodes on {{ $labels.instance }}"
+          description: "Inodes usage is above 90% on {{ $labels.instance }} for more than 10 minutes."
+  
+  - name: Site
+    rules:
+    - alert: site_down
+      expr: probe_success{job="blackbox-http_2xx"} == 0
+      for: 3m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Site '{{ $labels.instance }}' is DOWN for 3 minutes"
+        description: "Probe_success {{ $labels.instance }} is 0"
