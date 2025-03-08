@@ -1,7 +1,7 @@
 services:
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
@@ -24,7 +24,7 @@ services:
       - monitoring
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana
     user: root
     depends_on:
       - prometheus
@@ -43,7 +43,7 @@ services:
       - monitoring
 
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager
     user: root
     ports:
       - 9093:9093
@@ -61,7 +61,7 @@ services:
       - monitoring
 
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -81,8 +81,20 @@ services:
     networks:
       - monitoring
 
+  smartctl-exporter:
+    image: prometheuscommunity/smartctl-exporter
+    privileged: true
+    user: root
+    container_name: smartctl-exporter
+    hostname: smartctl-exporter
+    restart: unless-stopped
+    ports:
+      - "9633:9633"
+    networks:
+      - monitoring
+
   blackbox-exporter:
-    image: prom/blackbox-exporter:latest
+    image: prom/blackbox-exporter
     volumes:
       - ./blackbox.yml:/config/blackbox.yml
     container_name: blackbox-exporter
