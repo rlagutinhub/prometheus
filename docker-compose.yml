@@ -5,7 +5,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./alert.rules:/etc/prometheus/alert.rules
-      - prometheus_data:/prometheus
+      - ./prometheus:/prometheus
     container_name: prometheus
     hostname: prometheus
     command:
@@ -99,4 +99,6 @@ networks:
 
 # volumes:
 #   prometheus_data:
+#     driver: local
+#   grafana_data:
 #     driver: local
