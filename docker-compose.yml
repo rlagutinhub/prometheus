@@ -87,9 +87,13 @@ services:
     user: root
     container_name: smartctl-exporter
     hostname: smartctl-exporter
+    command:
+      - '--smartctl.interval=300s'
     restart: unless-stopped
     ports:
       - "9633:9633"
+    environment:
+      TZ: "Europe/Moscow"
     networks:
       - monitoring
 
@@ -104,6 +108,8 @@ services:
     restart: unless-stopped
     ports:
       - "9115:9115"
+    environment:
+      TZ: "Europe/Moscow"
     networks:
       - monitoring
 
