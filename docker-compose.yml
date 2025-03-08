@@ -4,7 +4,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./alert.rules:/etc/prometheus/alert.rules
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
       # - ./prometheus:/prometheus
       - prometheus_data:/prometheus
     container_name: prometheus
