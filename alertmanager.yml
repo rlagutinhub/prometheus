@@ -9,17 +9,17 @@ route:
 
   routes:
 
-   - receiver: 'telegram'
-     group_wait: 30s
-    #  match_re:
-    #    severity: 'critical|warning'
-     continue: true # Алерты продолжат передаваться в другие маршруты
+    - receiver: 'telegram'
+      group_wait: 30s
+      match_re:
+        severity: 'critical|warning'
+      continue: true # Алерты продолжат передаваться в другие маршруты
 
-  #  - receiver: 'mail'
-  #    group_wait: 30s
-  #   #  match_re:
-  #   #    severity: 'critical'
-  #    continue: true # Алерты продолжат передаваться в другие маршруты
+    # - receiver: 'mail'
+    #   group_wait: 30s
+    #   #  match_re:
+    #   #    severity: 'critical'
+    #   continue: true # Алерты продолжат передаваться в другие маршруты
 
 receivers:
 
@@ -32,12 +32,27 @@ receivers:
         chat_id: 471106208
         parse_mode: 'HTML'
         message: |
-          *Alert:* {{ .CommonAnnotations.summary }}
-          *Description:* {{ .CommonAnnotations.description }}
-          *Severity:* {{ .CommonLabels.severity }}
-          *Time:* {{ .StartsAt }}
-          *Labels:*
-          {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
+          {{ if eq .Status "firing" }}
+          {{ if eq .CommonLabels.severity "critical" }}🔴 *Alert:* {{ .CommonLabels.alertname }}
+          {{ else if eq .CommonLabels.severity "warning" }}🟠 *Alert:* {{ .CommonLabels.alertname }}
+          {{ else }}⚪️ *Alert:* {{ .CommonLabels.alertname }}
+          {{ end }}
+          *Status:* 🔥 FIRING
+          *Severity:* {{ if eq .CommonLabels.severity "critical" }}🔴 **{{ .CommonLabels.severity | title }}**{{ else if eq .CommonLabels.severity "warning" }}🟠 **{{ .CommonLabels.severity | title }}**{{ else }}⚪️ **{{ .CommonLabels.severity | title }}**{{ end }}
+          {{ else if eq .Status "resolved" }}
+          {{ if eq .CommonLabels.severity "critical" }}🟢 *🚌 TRANSPORT Alert:* {{ .CommonLabels.alertname }}
+          {{ else if eq .CommonLabels.severity "warning" }}🟢 *🚌 TRANSPORT 
+          Alert:* {{ .CommonLabels.alertname }}
+          {{ else }}⚪️ *Alert:* {{ .CommonLabels.alertname }}
+          {{ end }}
+          *Status:* ✅ RESOLVED
+          *Severity:* {{ if eq .CommonLabels.severity "critical" }}🟢 **{{ .CommonLabels.severity | title }}**{{ else if eq .CommonLabels.severity "warning" }}🟢 **{{ .CommonLabels.severity | title }}**{{ else }}⚪️ **{{ .CommonLabels.severity | title }}**{{ end }}
+          {{ end }}
+          {{ range .Alerts }}
+          *Instance:* {{ .Labels.instance }}
+            - *Title:* {{ .Annotations.title }}
+            - *Description:* {{ .Annotations.description }}
+          {{ end }}
           {{ end }}
 
   # - name: 'mail'
