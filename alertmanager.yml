@@ -1,24 +1,25 @@
 global:
-  resolve_timeout: 5m
+  resolve_timeout: 5m # время ожидания перед пометкой оповещения как "разрешенное"
 
 route:
-  group_by: ['alertname']
-  group_wait: 10s
-  receiver: default
+  group_by: ['alertname'] # Группировка алертов по alertname
+  group_wait: 10s # Ожидание перед отправкой первой группы алертов
+  group_interval: 5m # Минимальный интервал между повторными уведомлениями
+  receiver: default # Основной получатель по умолчанию
 
   routes:
 
    - receiver: 'telegram'
      group_wait: 10s
-     match_re:
-       severity: critical|warning
-     continue: true
+    #  match_re:
+    #    severity: 'critical|warning'
+     continue: true # Алерты продолжат передаваться в другие маршруты
 
-   - receiver: 'smtp'
+   - receiver: 'mail'
      group_wait: 10s
-     match_re:
-       severity: critical
-     continue: true
+    #  match_re:
+    #    severity: 'critical'
+     continue: true # Алерты продолжат передаваться в другие маршруты
 
 receivers:
 
@@ -39,7 +40,7 @@ receivers:
           {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
           {{ end }}
 
-  - name: 'smtp'
+  - name: 'mail'
     email_configs:
       - smarthost: mail.example.ru:25
         hello: mail.example.ru
