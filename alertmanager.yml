@@ -7,13 +7,21 @@ route:
   receiver: default
 
   routes:
-    - receiver: 'telegram'
-      group_wait: 10s
-      match_re:
-        severity: 'critical|warning'
-      continue: true
+
+   - receiver: 'telegram'
+     group_wait: 10s
+     match_re:
+       severity: critical|warning
+     continue: true
+
+   - receiver: 'smtp'
+     group_wait: 10s
+     match_re:
+       severity: critical
+     continue: true
 
 receivers:
+
   - name: 'default'
 
   - name: 'telegram'
@@ -21,6 +29,7 @@ receivers:
       - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
         api_url: 'https://api.telegram.org'
         chat_id: 471106208
+        parse_mode: 'HTML'
         message: |
           *Alert:* {{ .CommonAnnotations.summary }}
           *Description:* {{ .CommonAnnotations.description }}
@@ -29,3 +38,13 @@ receivers:
           *Labels:*
           {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
           {{ end }}
+
+  - name: 'smtp'
+    email_configs:
+      - smarthost: mail.example.ru:25
+        hello: mail.example.ru
+        to: 'root@servers.ru'
+        from: 'alert@example.ru'
+        auth_username: 'alert@example.ru'
+        auth_password: '123456'
+        require_tls: true
