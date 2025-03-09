@@ -46,8 +46,9 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-        - https://ya123456.ru
+        - https://ya.ru
         - https://mail.ru
+        - http://192.168.1.1
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
