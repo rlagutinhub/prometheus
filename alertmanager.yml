@@ -32,23 +32,28 @@ receivers:
         chat_id: 471106208
         parse_mode: 'Markdown'
         message: |
-          {{ if eq .Status "firing" }}
-          {{ if eq .CommonLabels.severity "critical" }}🔴 *CRITICAL ALERT:* {{ .CommonLabels.alertname }}
-          {{ else if eq .CommonLabels.severity "warning" }}🟠 *WARNING ALERT:* {{ .CommonLabels.alertname }}
-          {{ else }}⚪️ *INFO ALERT:* {{ .CommonLabels.alertname }}
-          {{ end }}
-          *Status:* 🔥 `FIRING`
-          *Severity:* `{{ .CommonLabels.severity | title }}`
-          {{ else if eq .Status "resolved" }}
-          🟢 *RESOLVED ALERT:* {{ .CommonLabels.alertname }}
-          *Status:* ✅ `RESOLVED`
-          *Severity:* `{{ .CommonLabels.severity | title }}`
-          {{ end }}
+          {{ if eq .Status "firing" -}}
+          🚨 *ALERT: {{ .CommonLabels.alertname }}* 🚨
 
-          *Instance:* `{{ .CommonLabels.instance }}`
-          *Summary:* `{{ .CommonAnnotations.summary }}`
-          *Description:* `{{ .CommonAnnotations.description }}`
-          *Timestamp:* {{ .StartsAt }}
+          *Status:* 🔥 Firing  
+          *Severity:* {{ .CommonLabels.severity }}  
+          *Instance:* `{{ .CommonLabels.instance }}`  
+          *Description:* {{ .CommonAnnotations.description }}  
+
+          📅 *Time:* {{ .StartsAt }}
+
+          {{ else -}}
+          ✅ *ALERT RESOLVED: {{ .CommonLabels.alertname }}* ✅
+
+          *Status:* ✅ Resolved  
+          *Severity:* {{ .CommonLabels.severity }}  
+          *Instance:* `{{ .CommonLabels.instance }}`  
+          *Description:* {{ .CommonAnnotations.description }}  
+
+          📅 *Start Time:* {{ .StartsAt }}  
+          🕒 *Resolved At:* {{ .EndsAt }}
+
+          {{ end }}
 
   # - name: 'mail'
   #   email_configs:
