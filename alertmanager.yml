@@ -1,29 +1,29 @@
 global:
-  resolve_timeout: 5m # время ожидания перед пометкой оповещения как "разрешенное"
+  resolve_timeout: 30m # Через сколько времени после исчезновения алерта он считается разрешённым
 
 route:
   group_by: ['alertname'] # Группировка алертов по alertname
-  group_wait: 10s # Ожидание перед отправкой первой группы алертов
-  group_interval: 5m # Минимальный интервал между повторными уведомлениями
+  group_wait: 30s # Ожидание перед отправкой первой группы алертов
+  group_interval: 30m # Интервал между повторными уведомлениями
   receiver: default # Основной получатель по умолчанию
 
   routes:
 
    - receiver: 'telegram'
-     group_wait: 10s
+     group_wait: 30s
     #  match_re:
     #    severity: 'critical|warning'
      continue: true # Алерты продолжат передаваться в другие маршруты
 
-   - receiver: 'mail'
-     group_wait: 10s
-    #  match_re:
-    #    severity: 'critical'
-     continue: true # Алерты продолжат передаваться в другие маршруты
+  #  - receiver: 'mail'
+  #    group_wait: 30s
+  #   #  match_re:
+  #   #    severity: 'critical'
+  #    continue: true # Алерты продолжат передаваться в другие маршруты
 
 receivers:
 
-  - name: 'default'
+  - name: 'default' # Основной получатель заглушка
 
   - name: 'telegram'
     telegram_configs:
@@ -40,12 +40,12 @@ receivers:
           {{ range .Labels.SortedPairs }} • {{ .Name }} = {{ .Value }}
           {{ end }}
 
-  - name: 'mail'
-    email_configs:
-      - smarthost: mail.example.ru:25
-        hello: mail.example.ru
-        to: 'root@servers.ru'
-        from: 'alert@example.ru'
-        auth_username: 'alert@example.ru'
-        auth_password: '123456'
-        require_tls: true
+  # - name: 'mail'
+  #   email_configs:
+  #     - smarthost: mail.example.ru:25
+  #       hello: mail.example.ru
+  #       to: 'root@servers.ru'
+  #       from: 'alert@example.ru'
+  #       auth_username: 'alert@example.ru'
+  #       auth_password: '123456'
+  #       require_tls: true
