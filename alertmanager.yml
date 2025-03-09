@@ -30,30 +30,25 @@ receivers:
       - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
         api_url: 'https://api.telegram.org'
         chat_id: 471106208
-        parse_mode: 'HTML'
+        parse_mode: 'Markdown'
         message: |
           {{ if eq .Status "firing" }}
-          {{ if eq .CommonLabels.severity "critical" }}🔴 *Alert:* {{ .CommonLabels.alertname }}
-          {{ else if eq .CommonLabels.severity "warning" }}🟠 *Alert:* {{ .CommonLabels.alertname }}
-          {{ else }}⚪️ *Alert:* {{ .CommonLabels.alertname }}
+          {{ if eq .CommonLabels.severity "critical" }}🔴 *CRITICAL ALERT:* {{ .CommonLabels.alertname }}
+          {{ else if eq .CommonLabels.severity "warning" }}🟠 *WARNING ALERT:* {{ .CommonLabels.alertname }}
+          {{ else }}⚪️ *INFO ALERT:* {{ .CommonLabels.alertname }}
           {{ end }}
-          *Status:* 🔥 FIRING
-          *Severity:* {{ if eq .CommonLabels.severity "critical" }}🔴 **{{ .CommonLabels.severity | title }}**{{ else if eq .CommonLabels.severity "warning" }}🟠 **{{ .CommonLabels.severity | title }}**{{ else }}⚪️ **{{ .CommonLabels.severity | title }}**{{ end }}
+          *Status:* 🔥 `FIRING`
+          *Severity:* `{{ .CommonLabels.severity | title }}`
           {{ else if eq .Status "resolved" }}
-          {{ if eq .CommonLabels.severity "critical" }}🟢 *🚌 TRANSPORT Alert:* {{ .CommonLabels.alertname }}
-          {{ else if eq .CommonLabels.severity "warning" }}🟢 *🚌 TRANSPORT 
-          Alert:* {{ .CommonLabels.alertname }}
-          {{ else }}⚪️ *Alert:* {{ .CommonLabels.alertname }}
+          🟢 *RESOLVED ALERT:* {{ .CommonLabels.alertname }}
+          *Status:* ✅ `RESOLVED`
+          *Severity:* `{{ .CommonLabels.severity | title }}`
           {{ end }}
-          *Status:* ✅ RESOLVED
-          *Severity:* {{ if eq .CommonLabels.severity "critical" }}🟢 **{{ .CommonLabels.severity | title }}**{{ else if eq .CommonLabels.severity "warning" }}🟢 **{{ .CommonLabels.severity | title }}**{{ else }}⚪️ **{{ .CommonLabels.severity | title }}**{{ end }}
-          {{ end }}
-          {{ range .Alerts }}
-          *Instance:* {{ .Labels.instance }}
-            - *Title:* {{ .Annotations.title }}
-            - *Description:* {{ .Annotations.description }}
-          {{ end }}
-          {{ end }}
+
+          *Instance:* `{{ .CommonLabels.instance }}`
+          *Summary:* `{{ .CommonAnnotations.summary }}`
+          *Description:* `{{ .CommonAnnotations.description }}`
+          *Timestamp:* {{ .StartsAt }}
 
   # - name: 'mail'
   #   email_configs:
