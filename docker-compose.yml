@@ -23,6 +23,24 @@ services:
     networks:
       - monitoring
 
+  alertmanager:
+    image: prom/alertmanager
+    user: root
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    container_name: alertmanager
+    hostname: alertmanager
+    environment:
+      TZ: "Europe/Moscow"
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/etc/alertmanager/data'
+    networks:
+      - monitoring
+
   grafana:
     image: grafana/grafana
     user: root
@@ -39,24 +57,6 @@ services:
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
-    networks:
-      - monitoring
-
-  alertmanager:
-    image: prom/alertmanager
-    user: root
-    ports:
-      - 9093:9093
-    volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    container_name: alertmanager
-    hostname: alertmanager
-    environment:
-      TZ: "Europe/Moscow"
-    restart: unless-stopped
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/etc/alertmanager/data'
     networks:
       - monitoring
 
