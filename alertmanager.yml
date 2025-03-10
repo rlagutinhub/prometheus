@@ -32,9 +32,9 @@ receivers:
 
   - name: 'telegram'
     telegram_configs:
-      - bot_token: '7407392706:AAFuCDaTdBe_LVO-dsdBVkiw7Z3e5QzxvyA'
+      - bot_token: 'XXX'
         api_url: 'https://api.telegram.org'
-        chat_id: 471106208
+        chat_id: XXX
         parse_mode: 'Markdown'
         message: | # amtool alert add --alertmanager.url http://localhost:9093 alertname=alertname_test host=host_test instance=instance_test
           *{{ .Status | title }}:* *{{ .CommonLabels.alertname }}* {{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }}
