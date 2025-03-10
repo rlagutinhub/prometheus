@@ -5,8 +5,8 @@ global:
 
 route:
   group_by: ['alertname', 'instance'] # Группировка алертов по alertname и instance
-  group_wait: 10s # Ожидание перед отправкой первой группы алертов
-  group_interval: 1m # Ожидание перед отправкой новых алертов из этой же группы
+  group_wait: 30s # Ожидание перед отправкой первой группы алертов
+  group_interval: 5m # Ожидание перед отправкой новых алертов из этой же группы
   repeat_interval: 1h # Интервал между повторными уведомлениями
   receiver: default # Основной получатель по умолчанию
 
@@ -37,17 +37,18 @@ receivers:
       - bot_token: 'XXX'
         api_url: 'https://api.telegram.org'
         chat_id: XXX
-        parse_mode: 'Markdown'
-        message: | 
-          {{ if gt (len .Alerts.Firing) 0 }}
-          🔥 Firing:
-          {{ template "__text_alert_list" .Alerts.Firing }}
-          {{ end }}
-          {{ if gt (len .Alerts.Resolved) 0 }}
-          ✅ Resolved:
-          {{ template "__text_alert_list" .Alerts.Resolved }}
-          {{ end }}
-          {{ end }}
+        parse_mode: 'MarkdownV2'
+        disable_notifications: false
+        send_resolved: true
+        # message: |
+        #   {{ if gt (len .Alerts.Firing) 0 }}
+        #   🔥 Firing:
+        #   {{ template "__text_alert_list" .Alerts.Firing }}
+        #   {{ end }}
+        #   {{ if gt (len .Alerts.Resolved) 0 }}
+        #   ✅ Resolved:
+        #   {{ template "__text_alert_list" .Alerts.Resolved }}
+        #   {{ end }}
         # message: |
         #   *{{ .Status | title }}:* *{{ .CommonLabels.alertname }}* {{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }}
 
@@ -71,7 +72,43 @@ receivers:
         #   `{{ .Name }}: {{ .Value }}`
         #   {{- end }}
         #   {{- end }}
-  
+        message: |
+          {{- if eq .Status "firing" -}}
+              {{- if eq .CommonLabels.severity "critical" -}}
+                  🔴 Alert: {{ .CommonLabels.alertname }}
+              {{- else if eq .CommonLabels.severity "warning" -}}
+                  🟠 Alert: {{ .CommonLabels.alertname }}
+              {{- else -}}
+                  ⚪️ Alert: {{ .CommonLabels.alertname }}
+              {{- end }}
+          Status: 🔥 FIRING
+          Severity: {{ if eq .CommonLabels.severity "critical" }}🔴 {{ .CommonLabels.severity | title }}{{ else if eq .CommonLabels.severity "warning" }}🟠 {{ .CommonLabels.severity | title }}{{ else }}⚪️ {{ .CommonLabels.severity | title }}{{ end }}
+          {{- else if eq .Status "resolved" -}}
+              ⚪️ Alert: {{ .CommonLabels.alertname }}
+          Status: ✅ RESOLVED
+          Severity: {{ if eq .CommonLabels.severity "critical" }}🟢 {{ .CommonLabels.severity | title }}{{ else if eq .CommonLabels.severity "warning" }}🟢 {{ .CommonLabels.severity | title }}{{ else }}⚪️ {{ .CommonLabels.severity | title }}{{ end }}
+          {{- end }}
+
+          {{- range .Alerts -}}
+
+          {{- if .Labels.job }}
+          Job: `{{ .Labels.job }}`
+          {{- end }}
+
+          {{- if .Labels.namespace }}
+          Namespace: `{{ .Labels.namespace }}`
+          {{- end }}
+
+          {{- if .Labels.instance }}
+          Instance: `{{ .Labels.instance }}`
+          {{- end }}
+
+          {{- if .Annotations.runbook_url }}
+          [RunbookURL]({{ .Annotations.runbook_url }})
+
+          {{- end }}
+          {{- end }}
+
   # - name: 'mail'
   #   email_configs:
   #     - smarthost: mail.example.ru:25
